@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+}
+
+model Order {
+  id            String      @id @default(uuid()) @db.Uuid
+  customerEmail String      @map("customer_email") @db.VarChar(254)
+  productId     String      @map("product_id") @db.VarChar(64)
+  amountMinor   Int         @map("amount_minor")
+  currency      String      @db.VarChar(3)
+  status        OrderStatus @default(PENDING)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  payments      Payment[]
+
+  @@index([status])
+  @@index([customerEmail])
+  @@map("orders")
+}
+
+model Payment {
+  id                         String        @id @default(uuid()) @db.Uuid
+  orderId                    String        @map("order_id") @db.Uuid
+  transactionReference       String        @unique @map("transaction_reference") @db.VarChar(64)
+  amountMinor                Int           @map("amount_minor")
+  currency                   String        @db.VarChar(3)
+  status                     PaymentStatus @default(PENDING)
+  gatewayPaymentReference    String?       @map("gateway_payment_reference") @db.VarChar(128)
+  gatewayResponseCode        String?       @map("gateway_response_code") @db.VarChar(16)
+  gatewayResponseDescription String?       @map("gateway_response_description") @db.VarChar(255)
+  verifiedAt                 DateTime?     @map("verified_at")
+  createdAt                  DateTime      @default(now()) @map("created_at")
+  updatedAt                  DateTime      @updatedAt @map("updated_at")
+  order                      Order         @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([status])
+  @@map("payments")
+}

@@ -1,0 +1,50 @@
+@baseUrl = http://localhost:3000/api
+
+### Health
+GET {{baseUrl}}/health
+
+### List products
+GET {{baseUrl}}/products
+
+### Create an order
+# @name createOrder
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "customerEmail": "ada@uniuyo.edu.ng",
+  "productId": "unistore-hoodie"
+}
+
+### Get the order
+GET {{baseUrl}}/orders/{{createOrder.response.body.data.id}}
+
+### Initialize payment
+# @name initialize
+POST {{baseUrl}}/payments/initialize
+Content-Type: application/json
+
+{
+  "orderId": "{{createOrder.response.body.data.id}}"
+}
+
+### Verify payment (server-side requery)
+POST {{baseUrl}}/payments/verify
+Content-Type: application/json
+
+{
+  "transactionReference": "{{initialize.response.body.data.payment.transactionReference}}"
+}
+
+### Get payment status
+GET {{baseUrl}}/payments/{{initialize.response.body.data.payment.transactionReference}}
+
+### Tampering attempt: client-supplied amount is rejected
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "customerEmail": "ada@uniuyo.edu.ng",
+  "productId": "unistore-hoodie",
+  "amountMinor": 1
+}

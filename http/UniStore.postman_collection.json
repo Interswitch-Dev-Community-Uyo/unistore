@@ -1,0 +1,96 @@
+{
+  "info": {
+    "name": "UniStore - InterSwitch Web Checkout Workshop",
+    "description": "Run the requests top to bottom. Create Order stores orderId; Initialize Payment stores transactionReference.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "orderId", "value": "" },
+    { "key": "transactionReference", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "List Products",
+      "request": { "method": "GET", "url": "{{baseUrl}}/products" }
+    },
+    {
+      "name": "Create Order",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('201 Created', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('orderId', pm.response.json().data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/orders",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerEmail\": \"ada@uniuyo.edu.ng\",\n  \"productId\": \"unistore-hoodie\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Get Order",
+      "request": { "method": "GET", "url": "{{baseUrl}}/orders/{{orderId}}" }
+    },
+    {
+      "name": "Initialize Payment",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('201 Created', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('transactionReference', pm.response.json().data.payment.transactionReference);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/payments/initialize",
+        "body": { "mode": "raw", "raw": "{\n  \"orderId\": \"{{orderId}}\"\n}" }
+      }
+    },
+    {
+      "name": "Verify Payment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/payments/verify",
+        "body": { "mode": "raw", "raw": "{\n  \"transactionReference\": \"{{transactionReference}}\"\n}" }
+      }
+    },
+    {
+      "name": "Get Payment",
+      "request": { "method": "GET", "url": "{{baseUrl}}/payments/{{transactionReference}}" }
+    },
+    {
+      "name": "Tampering Attempt (expect 400)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/orders",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerEmail\": \"ada@uniuyo.edu.ng\",\n  \"productId\": \"unistore-hoodie\",\n  \"amountMinor\": 1\n}"
+        }
+      }
+    }
+  ]
+}

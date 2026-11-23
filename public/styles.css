@@ -1,0 +1,113 @@
+:root {
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --text: #1c2430;
+  --muted: #5d6b7a;
+  --border: #dde2e8;
+  --accent: #00425f;
+  --success: #1a7f37;
+  --failed: #b42318;
+  --pending: #9a6700;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+}
+
+main {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+h1 {
+  margin: 0;
+}
+
+h2 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+}
+
+.muted {
+  color: var(--muted);
+  margin: 0;
+}
+
+.mono {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.price {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 8px 0 0;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+button {
+  margin-top: 12px;
+  width: 100%;
+  padding: 11px;
+  font-size: 1rem;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status p {
+  margin: 0 0 6px;
+}
+
+.status[data-kind='success'] #status-title {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.status[data-kind='failed'] #status-title {
+  color: var(--failed);
+  font-weight: 600;
+}
+
+.status[data-kind='pending'] #status-title {
+  color: var(--pending);
+  font-weight: 600;
+}
